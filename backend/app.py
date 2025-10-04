@@ -22,7 +22,8 @@ CORS(app)
 @app.route('/api/gamestate')
 def get_gamestate():
     try:
-        turn_number = int(request.args.get('turn', 0))
+        # --- FIX 1: Default turn is now 1, matching our data file ---
+        turn_number = int(request.args.get('turn', 1))
     except ValueError:
         return jsonify({"error": "Invalid turn number"}), 400
 
@@ -33,15 +34,11 @@ def get_gamestate():
     if game_data_df is None:
         return jsonify({"error": "Data not loaded"}), 500
 
-    # --- THIS IS THE FIX ---
-    # Find the row where the 'Turn' column's value matches the turn_number
     current_turn_data_row = game_data_df[game_data_df['Turn'] == turn_number]
     if current_turn_data_row.empty:
         return jsonify({"error": f"Turn {turn_number} not found in data file"}), 404
     current_turn_data = current_turn_data_row.iloc[0]
-    # -----------------------
 
-    # Extract data using the final column names
     crop_health_val = current_turn_data['NDVI']
     soil_root_val = current_turn_data['Soil_Root_Pct']
     temperature_val = current_turn_data['LST_Day_C']
@@ -58,7 +55,7 @@ def get_gamestate():
         "date": current_turn_data['Start_Date'],
         "seasonData": {
             "soilMoisture": {"value": round(soil_root_val, 2)},
-            "precipitation": {"value": 0, "level": "Normal"},
+            # --- FIX 2: Removed misleading hardcoded precipitation data ---
             "cropHealth": {"value": round(crop_health_val, 2)},
             "temperature": {"value": round(temperature_val, 1), "unit": "C"}
         },
