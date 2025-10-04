@@ -10,10 +10,10 @@ from events_logic import check_for_events
 REGIONS = ['Punjab', 'Iowa', 'Sahel', 'Netherlands', 'Brazil']
 
 # Dictionary to hold all 5 DataFrames, keyed by region name
-# This global variable will store the entire game's data upon startup
+
 GAME_DATA_DICT = {}
 
-# --- DATA LOADING FUNCTION (Executed once at server startup) ---
+# --- DATA LOADING FUNCTION
 def load_all_game_data():
     """Loads all 5 processed CSV files into the global dictionary."""
     global GAME_DATA_DICT
@@ -27,17 +27,17 @@ def load_all_game_data():
             # Load file and set 'Turn' column as index for fast lookups
             df = pd.read_csv(file_name)
             
-            # Use 'Turn' column as index for 1-based indexing lookup (CRITICAL FIX)
+            # Use 'Turn' column as index for 1-based indexing lookup 
             df.set_index('Turn', inplace=True) 
             
             GAME_DATA_DICT[region_name] = df
-            print(f"✅ Loaded data for {region_name}")
+            print(f" Loaded data for {region_name}")
             
         except FileNotFoundError:
-            print(f"❌ ERROR: File not found for {region_name}. Check B2's push.")
+            print(f"ERROR: File not found for {region_name}. Check B2's push.")
             data_loaded = False
         except Exception as e:
-            print(f"❌ ERROR loading {region_name} data: {e}")
+            print(f"ERROR loading {region_name} data: {e}")
             data_loaded = False
             
     if not data_loaded:
@@ -47,7 +47,7 @@ load_all_game_data()
 
 # --- Flask App Setup ---
 app = Flask(__name__)
-# Enable CORS for the frontend to access the API from a different origin (essential for hackathon environments)
+
 CORS(app) 
 
 # --- Main API Endpoint ---
@@ -94,7 +94,7 @@ def get_gamestate():
         }
     
     # --- 4. Create Final JSON Response ---
-    # Data is extracted using the clean column names created by B2's processor
+    
     live_data = {
         "turnNumber": turn_number,
         "region": region,
