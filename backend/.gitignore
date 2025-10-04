@@ -1,0 +1,16 @@
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# VS Code editor files
+.vscode/
+venv/
+.venv/
+*.o
+*.so
+# Raw NASA Data 
+raw_nasa_data/
