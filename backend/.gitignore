@@ -1,0 +1,9 @@
+venv/
+.venv/
+__pycache__/
+# Python build artifacts
+*.pyc
+*.o
+*.so
+# Raw NASA Data 
+raw_nasa_data/
