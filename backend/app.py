@@ -1,21 +1,24 @@
+# --- Imports ---
 import pandas as pd
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from events_logic import check_for_events
 
-# --- (Your data loading code from before stays the same) ---
+# --- Data Loading ---
 try:
-    csv_filename = 'processed_data.csv' # Make sure this is B2's filename
+    csv_filename = 'processed_data.csv'
     game_data_df = pd.read_csv(csv_filename)
     game_data_df.fillna(method='ffill', inplace=True)
     print("✅ B2's final processed data loaded successfully.")
 except FileNotFoundError:
     print(f"❌ Error: Data file '{csv_filename}' not found.")
     game_data_df = None
-# -----------------------------------------------------------
 
+# --- Flask App Setup ---
 app = Flask(__name__)
 CORS(app)
 
+# --- Main API Endpoint ---
 @app.route('/api/gamestate')
 def get_gamestate():
     try:
@@ -23,51 +26,47 @@ def get_gamestate():
     except ValueError:
         return jsonify({"error": "Invalid turn number"}), 400
 
-    if game_data_df is None or not (0 <= turn_number < len(game_data_df)):
-        return jsonify({"error": "Data not loaded or invalid turn number"}), 404
+    event_data = check_for_events(turn_number)
+    if event_data.get("type") == "ERROR":
+        return jsonify({"error": event_data["message"]}), 500
 
-    current_turn_data = game_data_df.iloc[turn_number]
+    if game_data_df is None:
+        return jsonify({"error": "Data not loaded"}), 500
 
-    # --- Use the EXACT column names you provided ---
-    # These are the keys to reading the data from B2's file
+    # --- THIS IS THE FIX ---
+    # Find the row where the 'Turn' column's value matches the turn_number
+    current_turn_data_row = game_data_df[game_data_df['Turn'] == turn_number]
+    if current_turn_data_row.empty:
+        return jsonify({"error": f"Turn {turn_number} not found in data file"}), 404
+    current_turn_data = current_turn_data_row.iloc[0]
+    # -----------------------
+
+    # Extract data using the final column names
     crop_health_val = current_turn_data['NDVI']
     soil_root_val = current_turn_data['Soil_Root_Pct']
     temperature_val = current_turn_data['LST_Day_C']
-    # -----------------------------------------------
-
-    # --- Implement Heat-Based Game Logic ---
-    HEATWAVE_THRESHOLD = 38  # 38°C is a good threshold for a heatwave in Punjab
     
-    precipitation_obj = {}
     special_event_obj = None
-
-    if temperature_val > HEATWAVE_THRESHOLD:
-        # If it's hot, there's no "rain" and a special event is triggered
-        precipitation_obj = {"value": 0, "level": "Dry Conditions"}
+    if event_data.get("type") != "none":
         special_event_obj = {
-            "eventName": "Heatwave",
-            "description": f"It's {round(temperature_val)}°C! The heat is intense, increasing crop water needs."
+            "eventName": event_data["type"],
+            "description": event_data["message"]
         }
-    else:
-        # If it's not a heatwave, conditions are normal (no rain is the default)
-        precipitation_obj = {"value": 0, "level": "Normal"}
-        special_event_obj = None
-    # ------------------------------------------
-
-    # --- Create the Final JSON Response ---
+    
     live_data = {
         "turnNumber": int(current_turn_data['Turn']),
         "date": current_turn_data['Start_Date'],
         "seasonData": {
             "soilMoisture": {"value": round(soil_root_val, 2)},
-            "precipitation": precipitation_obj, # Use our new dynamic object
+            "precipitation": {"value": 0, "level": "Normal"},
             "cropHealth": {"value": round(crop_health_val, 2)},
-            "temperature": {"value": round(temperature_val, 1), "unit": "C"} # Added temperature to the response!
+            "temperature": {"value": round(temperature_val, 1), "unit": "C"}
         },
-        "specialEvent": special_event_obj # Use our new dynamic object
+        "specialEvent": special_event_obj
     }
     
     return jsonify(live_data)
 
+# --- Run the Server ---
 if __name__ == '__main__':
     app.run(debug=True)
