@@ -6,8 +6,8 @@ import { DataPanel } from './components/DataPanel';
 import { SeasonComplete } from './components/SeasonComplete';
 import { ActionFeedback, ActionResult } from './components/ActionFeedback';
 import { Tractor } from 'lucide-react';
-// --- NEW: Import the LocationSelector ---
-import { LocationSelector } from './components/LocationSelector';
+import { StartScreen } from './components/StartScreen';
+import WorldMap from './components/WorldMap'; // We will create this next
 
 export interface Plot {
   id: number;
@@ -34,26 +34,21 @@ export interface GameState {
   specialEvent: { eventName: string; description: string; } | null;
 }
 
-const TOTAL_WEEKS = 6;
+const TOTAL_WEEKS = 25;
 const GRID_SIZE = 9;
 const INITIAL_MONEY = 5000;
 
 export default function App() {
-  // --- NEW: State to track the current location ---
-  const [location, setLocation] = useState('punjab');
+  const [currentScreen, setCurrentScreen] = useState('start'); // 'start', 'map', 'game'
+  const [location, setLocation] = useState<string | null>(null);
 
   const [gameState, setGameState] = useState<GameState>({
     week: 1,
     money: INITIAL_MONEY,
     selectedPlot: null,
     plots: Array.from({ length: GRID_SIZE }, (_, i) => ({
-      id: i,
-      cropType: null,
-      growthStage: 0,
-      health: 100,
-      soilMoisture: 0.5,
-      fertilizerEffect: 0,
-      pestLevel: 0,
+      id: i, cropType: null, growthStage: 0, health: 100,
+      soilMoisture: 0.5, fertilizerEffect: 0, pestLevel: 0,
     })),
     gameComplete: false,
     totalHarvested: 0,
@@ -68,13 +63,16 @@ export default function App() {
   const [isProcessing, setIsProcessing] = useState(true);
   const [actionResult, setActionResult] = useState<ActionResult | null>(null);
 
-  // --- MODIFICATION: fetchBackendData now accepts a location ---
+  const handleStartGame = () => setCurrentScreen('map');
+  const handleLocationSelect = (locationId: string) => {
+    setLocation(locationId);
+    setCurrentScreen('game');
+  };
+
   const fetchBackendData = async (turnNumber: number, loc: string) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/api/gamestate?location=${loc}&turn=${turnNumber}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       console.log(`Data for week ${turnNumber} at ${loc} received:`, data);
       return data;
@@ -84,15 +82,15 @@ export default function App() {
     }
   };
 
-  // --- MODIFICATION: useEffect now depends on location ---
   useEffect(() => {
+    if (currentScreen !== 'game' || !location) return;
+
     const loadInitialData = async () => {
       setIsProcessing(true);
       const initialData = await fetchBackendData(1, location);
       if (initialData) {
         setGameState(prev => ({
           ...prev,
-          // Reset core game stats but keep location-specific data
           week: initialData.turnNumber,
           date: initialData.date,
           globalSoilMoisture: initialData.seasonData.soilMoisture.value / 100,
@@ -104,19 +102,16 @@ export default function App() {
       setIsProcessing(false);
     };
     loadInitialData();
-  }, [location]); // This effect will re-run whenever the location changes
+  }, [location, currentScreen]);
 
   const advanceWeek = async () => {
-    if (isProcessing || gameState.week >= TOTAL_WEEKS) return;
+    if (isProcessing || !location || gameState.week >= TOTAL_WEEKS) return;
     setIsProcessing(true);
     
     const nextWeek = gameState.week + 1;
-    // --- MODIFICATION: Pass the current location to the fetch call ---
     const backendData = await fetchBackendData(nextWeek, location);
 
     if (!backendData) {
-        // --- FIX: If fetching data fails, assume it's the end of the season ---
-        console.log("No more data from backend. Ending season.");
         setGameState(prev => ({ ...prev, gameComplete: true }));
         setIsProcessing(false);
         return;
@@ -135,11 +130,8 @@ export default function App() {
         newPlot.pestLevel = Math.min(100, newPlot.pestLevel + Math.random() * pestIncrease);
         let healthChange = 0;
         const moistureDeficit = Math.abs(newPlot.soilMoisture - 0.5);
-        if (moistureDeficit > 0.2) {
-            healthChange -= moistureDeficit * 30;
-        } else {
-            healthChange += 10;
-        }
+        if (moistureDeficit > 0.2) healthChange -= moistureDeficit * 30;
+        else healthChange += 10;
         if (newPlot.fertilizerEffect > 0) healthChange += 15;
         if (newPlot.pestLevel > 40) healthChange -= (newPlot.pestLevel / 100) * 40;
         if (globalSoilMoisture < 0.20) healthChange -= 10;
@@ -189,14 +181,8 @@ export default function App() {
           break;
         case 'fertilize':
           let healthGain = 0;
-          if (level === 'cheap') {
-            healthGain = 10;
-            plot.fertilizerEffect = 2;
-          }
-          if (level === 'premium') {
-            healthGain = 25;
-            plot.fertilizerEffect = 4;
-          }
+          if (level === 'cheap') { healthGain = 10; plot.fertilizerEffect = 2; }
+          if (level === 'premium') { healthGain = 25; plot.fertilizerEffect = 4; }
           plot.health = Math.min(100, plot.health + healthGain);
           break;
         case 'pestControl':
@@ -211,7 +197,6 @@ export default function App() {
             plot.cropType = null;
             plot.growthStage = 0;
             plot.health = 100;
-            
             return {
               ...prev,
               money: prev.money + harvestValue,
@@ -223,45 +208,14 @@ export default function App() {
       }
       
       newPlots[plotIndex] = plot;
-      const simpleActionResult: ActionResult = {
-        type: 'success',
-        action: action,
-        message: `${action} applied successfully!`,
-        changes: { money: -cost }
-      };
+      const simpleActionResult: ActionResult = { type: 'success', action, message: `${action} applied!`, changes: { money: -cost } };
       setActionResult(simpleActionResult);
-
       return { ...prev, money: prev.money - cost, plots: newPlots };
     });
   };
 
   const selectPlot = (plotId: number) => {
-    setGameState(prev => ({
-      ...prev,
-      selectedPlot: prev.selectedPlot === plotId ? null : plotId,
-    }));
-  };
-
-  // --- MODIFICATION: Function to handle changing location ---
-  const handleLocationChange = (newLocation: string) => {
-    // --- FIX: Prevent changing location after week 1 ---
-    if (gameState.week > 1 || isProcessing || location === newLocation) return;
-    
-    // Reset game state when changing location
-    setLocation(newLocation);
-    setGameState(prev => ({
-        ...prev,
-        week: 1,
-        money: INITIAL_MONEY,
-        selectedPlot: null,
-        plots: Array.from({ length: GRID_SIZE }, (_, i) => ({
-            id: i, cropType: null, growthStage: 0, health: 100,
-            soilMoisture: 0.5, fertilizerEffect: 0, pestLevel: 0,
-        })),
-        gameComplete: false,
-        totalHarvested: 0,
-        seasonProfit: 0,
-    }));
+    setGameState(prev => ({ ...prev, selectedPlot: prev.selectedPlot === plotId ? null : plotId }));
   };
   
   const resetGame = () => { window.location.reload(); };
@@ -269,6 +223,16 @@ export default function App() {
   useEffect(() => {
     setGameState(prev => ({ ...prev, seasonProfit: prev.money - INITIAL_MONEY }));
   }, [gameState.money]);
+
+  // --- SCREEN MANAGER ---
+  if (currentScreen === 'start') {
+    return <StartScreen onStartGame={handleStartGame} />;
+  }
+
+  if (currentScreen === 'map') {
+    return <WorldMap onLocationSelect={handleLocationSelect} />;
+  }
+  // --- END SCREEN MANAGER ---
 
   if (gameState.gameComplete) {
     return <SeasonComplete gameState={gameState} onRestart={resetGame} />;
@@ -291,19 +255,10 @@ export default function App() {
       />
       
       <div className="flex-1 container mx-auto px-4 py-6 relative z-10">
-        {/* --- NEW: Location Selector is added here --- */}
-        <LocationSelector
-            currentLocation={location}
-            onSelectLocation={handleLocationChange}
-            isGameStarted={gameState.week > 1}
-        />
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full mt-4">
-          
           <div className="lg:col-span-3">
             <DataPanel gameState={gameState} />
           </div>
-          
           <div className="lg:col-span-6">
             <div className="bg-gradient-to-br from-emerald-900/50 via-green-900/50 to-teal-900/50 backdrop-blur-md rounded-3xl p-6 border-2 border-emerald-400/40 shadow-2xl h-full game-glow">
               <div className="flex items-center justify-between mb-6">
@@ -312,19 +267,16 @@ export default function App() {
                     <Tractor className="h-6 w-6 text-emerald-400" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white">YOUR FARM</h2>
+                    <h2 className="text-2xl font-bold text-white">YOUR FARM - {location?.toUpperCase()}</h2>
                     <p className="text-xs text-emerald-300">Manage your crops</p>
                   </div>
                 </div>
                 <div className="px-4 py-2 bg-emerald-500/20 rounded-xl border border-emerald-400/30">
                   <div className="text-xs text-emerald-300">
-                    {gameState.selectedPlot !== null 
-                      ? `Plot #${gameState.selectedPlot + 1}` 
-                      : 'No selection'}
+                    {gameState.selectedPlot !== null ? `Plot #${gameState.selectedPlot + 1}` : 'No selection'}
                   </div>
                 </div>
               </div>
-              
               <FarmGrid 
                 plots={gameState.plots}
                 selectedPlot={gameState.selectedPlot}
@@ -332,7 +284,6 @@ export default function App() {
               />
             </div>
           </div>
-          
           <div className="lg:col-span-3">
             <ActionPanel 
               gameState={gameState}
@@ -342,11 +293,7 @@ export default function App() {
           </div>
         </div>
       </div>
-      
-      <ActionFeedback 
-        result={actionResult} 
-        onClose={() => setActionResult(null)} 
-      />
+      <ActionFeedback result={actionResult} onClose={() => setActionResult(null)} />
     </div>
   );
 }
