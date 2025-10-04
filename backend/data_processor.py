@@ -31,12 +31,9 @@ def process_data():
     df_ndvi = df_ndvi[['Date', COL_NAMES['NDVI']]].set_index('Date')
     df_ndvi.columns = ['NDVI']
 
-    # Load 3-Hourly Data (SMAP) and Aggregate to Daily ---
     df_smap = pd.read_csv(INPUT_FILES['SMAP'], parse_dates=['Date'], index_col='Date')
-    
-   
+
     df_smap.index = df_smap.index.tz_localize(None) 
-    
     
     df_smap_daily = df_smap[[COL_NAMES['SMAP_ROOT'], COL_NAMES['SMAP_SURF']]].resample('D').mean()
 
@@ -77,7 +74,7 @@ def process_data():
     output_filename = 'processed_data.csv'
     df_output.to_csv(output_filename, index=False)
     
-    print(f"\n✅ SUCCESS: '{output_filename}' created for B1 with {len(df_output)} game turns.")
+    print(f"\n SUCCESS: '{output_filename}' created  with {len(df_output)} game turns.")
 
 if __name__ == '__main__':
 
