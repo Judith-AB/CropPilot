@@ -16,27 +16,33 @@ const destinations = [
     {
         id: 'Punjab', name: 'Punjab, India', x: 66, y: 52,
         avatar: punjabAvatar, avatarName: 'Alex', role: 'Research Student',
-        story: 'As a research student, I\'m exploring sustainable farming methods in the breadbasket of India. I believe we can use technology to improve crop yields and reduce environmental impact.'
+        story: 'My grandfather\'s hands were weathered from a lifetime of farming, yet he always smiled. When he passed, he made me promise to help farmers like him. Now I study sustainable methods, hoping to honor his memory and ease the burden for those who feed us all.'
     },
     {
         id: 'Iowa', name: 'Iowa, USA', x: 23, y: 45,
         avatar: iowaAvatar, avatarName: 'John', role: 'Family Farmer',
-        story: 'My family has been farming this land for generations. I want to combine our traditional knowledge with modern techniques to make our farm more efficient and sustainable for the future.'
+        story: 'Every morning, I walk the same fields my father did. He taught me to listen to the land, but lately it\'s been harder to understand. I\'m learning new ways while holding onto his lessons, hoping my kids will want to continue what we\'ve built together.'
     },
     {
         id: 'Sahel', name: 'Sahel, Africa', x: 49, y: 55,
         avatar: sahelAvatar, avatarName: 'Leyla', role: 'Climate Scientist',
-        story: 'I\'m a climate scientist studying the effects of changing weather patterns. The Sahel is a critical region for this research. Join me in developing strategies to help farmers adapt and thrive.'
+        story: 'I remember my mother\'s worried face during the droughts, how she\'d skip meals to feed us. That memory pushed me through university. Now I return home not as the girl who left, but as someone who might finally have answers to help my community thrive again.'
     },
     {
         id: 'Netherlands', name: 'Netherlands', x: 47.5, y: 39,
         avatar: netherlandsAvatar, avatarName: 'Chloe', role: 'Agri-Tech Innovator',
-        story: 'I believe technology is the key to the future of farming. Here in the Netherlands, we are pioneering new methods. Join me in pushing the boundaries of what\'s possible in agriculture.'
+        story: 'My grandmother always said we must leave the earth better than we found it. Watching her tend her small garden with such care inspired me to think bigger. Now I combine her gentle wisdom with modern technology, trying to grow food in harmony with nature.'
     },
     {
+<<<<<<< Updated upstream
         id: 'Brazil', name: 'Brazil', x: 32, y: 68,
         avatar: brazilAvatar, avatarName: 'Sara', role: 'Agricultural Student',
         story: 'As an agricultural student, I\'m passionate about learning new techniques. Brazil\'s diverse climate provides a great opportunity to study different crops. Let\'s innovate together!'
+=======
+        id: 'Brazil', name: 'Brazil', x: 40, y: 58,
+        avatar: brazilAvatar, avatarName: 'Sarah', role: 'Agricultural Student',
+        story: 'I grew up helping my parents on our small farm, dreaming of faraway places. But when I left for university, I realized home was where I was needed most. I\'m learning everything I can to come back and show that we can farm sustainably and prosperously.'
+>>>>>>> Stashed changes
     },
 ];
 
