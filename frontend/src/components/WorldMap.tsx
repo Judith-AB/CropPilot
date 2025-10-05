@@ -9,34 +9,34 @@ import netherlandsAvatar from '../assets/Cloe.png';
 import sahelAvatar from '../assets/africa.png';
 
 interface WorldMapProps {
-  onLocationSelect: (locationId: string) => void;
+    onLocationSelect: (locationId: string) => void;
 }
 
 const destinations = [
-    { 
-      id: 'punjab', name: 'Punjab, India', x: 68, y: 38, 
-      avatar: punjabAvatar, avatarName: 'Alex', role: 'Research Student',
-      story: 'As a research student, I\'m exploring sustainable farming methods in the breadbasket of India. I believe we can use technology to improve crop yields and reduce environmental impact.'
+    {
+        id: 'Punjab', name: 'Punjab, India', x: 68, y: 38,
+        avatar: punjabAvatar, avatarName: 'Alex', role: 'Research Student',
+        story: 'As a research student, I\'m exploring sustainable farming methods in the breadbasket of India. I believe we can use technology to improve crop yields and reduce environmental impact.'
     },
-    { 
-      id: 'iowa', name: 'Iowa, USA', x: 25, y: 35,
-      avatar: iowaAvatar, avatarName: 'John', role: 'Family Farmer',
-      story: 'My family has been farming this land for generations. I want to combine our traditional knowledge with modern techniques to make our farm more efficient and sustainable for the future.'
+    {
+        id: 'Iowa', name: 'Iowa, USA', x: 25, y: 35,
+        avatar: iowaAvatar, avatarName: 'John', role: 'Family Farmer',
+        story: 'My family has been farming this land for generations. I want to combine our traditional knowledge with modern techniques to make our farm more efficient and sustainable for the future.'
     },
-    { 
-      id: 'brazil', name: 'Brazil', x: 40, y: 58,
-      avatar: brazilAvatar, avatarName: 'Sarah', role: 'Agricultural Student',
-      story: 'As an agricultural student, I\'m passionate about learning new techniques. Brazil\'s diverse climate provides a great opportunity to study different crops. Let\'s innovate together!'
+    {
+        id: 'Sahel', name: 'Sahel, Africa', x: 49, y: 45,
+        avatar: sahelAvatar, avatarName: 'Leyla', role: 'Climate Scientist',
+        story: 'I\'m a climate scientist studying the effects of changing weather patterns. The Sahel is a critical region for this research. Join me in developing strategies to help farmers adapt and thrive.'
     },
-    { 
-      id: 'netherlands', name: 'Netherlands', x: 50, y: 30,
-      avatar: netherlandsAvatar, avatarName: 'Chloe', role: 'Agri-Tech Innovator',
-      story: 'I believe technology is the key to the future of farming. Here in the Netherlands, we are pioneering new methods. Join me in pushing the boundaries of what\'s possible in agriculture.'
+    {
+        id: 'Netherlands', name: 'Netherlands', x: 50, y: 30,
+        avatar: netherlandsAvatar, avatarName: 'Chloe', role: 'Agri-Tech Innovator',
+        story: 'I believe technology is the key to the future of farming. Here in the Netherlands, we are pioneering new methods. Join me in pushing the boundaries of what\'s possible in agriculture.'
     },
-    { 
-      id: 'sahel', name: 'Sahel, Africa', x: 49, y: 45,
-      avatar: sahelAvatar, avatarName: 'Leyla', role: 'Climate Scientist',
-      story: 'I\'m a climate scientist studying the effects of changing weather patterns. The Sahel is a critical region for this research. Join me in developing strategies to help farmers adapt and thrive.'
+    {
+        id: 'Brazil', name: 'Brazil', x: 40, y: 58,
+        avatar: brazilAvatar, avatarName: 'Sarah', role: 'Agricultural Student',
+        story: 'As an agricultural student, I\'m passionate about learning new techniques. Brazil\'s diverse climate provides a great opportunity to study different crops. Let\'s innovate together!'
     },
 ];
 
@@ -77,13 +77,13 @@ export default function WorldMap({ onLocationSelect }: WorldMapProps) {
             {selectedDestination && (
                 <div className="absolute inset-0 z-20 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
                     <div className="bg-slate-800/80 border-2 border-violet-500/30 rounded-2xl p-8 max-w-xl w-full relative shadow-2xl text-white">
-                        <button 
+                        <button
                             onClick={() => setSelectedDestination(null)}
                             className="absolute top-4 right-4 text-violet-300 hover:text-white transition-colors"
                         >
                             <X size={24} />
                         </button>
-                        
+
                         <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-6">
                             <img
                                 src={selectedDestination.avatar}
@@ -99,8 +99,9 @@ export default function WorldMap({ onLocationSelect }: WorldMapProps) {
                                 </p>
                             </div>
                         </div>
-                        
+
                         <button
+
                             onClick={() => onLocationSelect(selectedDestination.id)}
                             className="w-full mt-8 px-6 py-4 rounded-lg text-xl font-bold text-white bg-violet-600 hover:bg-violet-700 transition-colors transform hover:scale-105"
                         >
@@ -112,4 +113,3 @@ export default function WorldMap({ onLocationSelect }: WorldMapProps) {
         </div>
     );
 }
-
