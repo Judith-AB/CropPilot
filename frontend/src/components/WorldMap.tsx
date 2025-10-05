@@ -34,7 +34,7 @@ const destinations = [
         story: 'My grandmother always said we must leave the earth better than we found it. Watching her tend her small garden with such care inspired me to think bigger. Now I combine her gentle wisdom with modern technology, trying to grow food in harmony with nature.'
     },
     {
-        id: 'Brazil', name: 'Brazil', x: 40, y: 58,
+        id: 'Brazil', name: 'Brazil', x: 31,y:68,
         avatar: brazilAvatar, avatarName: 'Sarah', role: 'Agricultural Student',
         story: 'I grew up helping my parents on our small farm, dreaming of faraway places. But when I left for university, I realized home was where I was needed most. I\'m learning everything I can to come back and show that we can farm sustainably and prosperously.'
     },
@@ -75,8 +75,8 @@ export default function WorldMap({ onLocationSelect }: WorldMapProps) {
             </div>
 
             {selectedDestination && (
-                <div className="absolute inset-0 z-20 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
-                    <div className="bg-white border-2 border-violet-500/30 rounded-2xl p-8 max-w-xl w-full relative shadow-2xl text-black">
+                <div className="absolute inset-0 z-20 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
+                    <div className="bg-white rounded-2xl p-8 max-w-3xl w-full relative shadow-2xl text-black border-4 border-white">
                         <button
                             onClick={() => setSelectedDestination(null)}
                             className="absolute top-4 right-4 text-black hover:text-red-600 transition-colors"
@@ -84,25 +84,25 @@ export default function WorldMap({ onLocationSelect }: WorldMapProps) {
                             <X size={24} />
                         </button>
 
-                        <div className="flex items-center space-x-6">
+                        <div className="flex items-center gap-6">
                             <img
                                 src={selectedDestination.avatar}
                                 alt={`${selectedDestination.avatarName} avatar`}
-                                className="w-40 h-40 object-cover rounded-full border-4 border-violet-400 shadow-lg flex-shrink-0"
+                                className="w-48 h-48 object-cover rounded-full border-4 border-violet-400 shadow-lg flex-shrink-0"
                             />
-                            <div className="relative bg-white text-black p-6 rounded-3xl shadow-lg w-full">
-                                <div className="absolute top-1/2 -left-3 w-6 h-6 bg-white transform -translate-y-1/2 rotate-45"></div>
-
-                                <div className="space-y-2">
+                            
+                            <div className="bg-white rounded-2xl shadow-2xl p-6 flex-1 border-2 border-gray-200">
+                                <div className="space-y-3">
                                     <h2 className="text-3xl font-bold">{selectedDestination.avatarName}</h2>
-                                    <p className="text-lg font-semibold text-black">{selectedDestination.role}</p>
-                                    <p className="text-md text-black">{selectedDestination.story}</p>
+                                    <p className="text-lg font-semibold text-violet-600">{selectedDestination.role}</p>
+                                    <p className="text-base text-gray-800 leading-relaxed">{selectedDestination.story}</p>
                                 </div>
+                                
                                 <button
                                     onClick={() => onLocationSelect(selectedDestination.id)}
-                                    className="w-full mt-4 px-6 py-3 rounded-lg text-lg font-bold text-white bg-violet-600 hover:bg-violet-700 transition-colors transform hover:scale-105"
+                                    className="w-full mt-6 px-6 py-3 rounded-lg text-lg font-bold text-white bg-green-600 hover:bg-green-700 transition-all transform hover:scale-105 shadow-lg"
                                 >
-                                    Start as {selectedDestination.avatarName}
+                                    Play as {selectedDestination.avatarName}
                                 </button>
                             </div>
                         </div>
