@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+package-lock.json
+
+# build output
+dist/
+build/
+
+# local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE/editor stuff
+.vscode/
+.idea/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# temporary files
+*.tmp
+*.swp
+
+# TypeScript
+*.tsbuildinfo
