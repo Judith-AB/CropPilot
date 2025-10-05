@@ -14,28 +14,28 @@ interface WorldMapProps {
 
 const destinations = [
     {
-        id: 'Punjab', name: 'Punjab, India', x: 68, y: 38,
+        id: 'Punjab', name: 'Punjab, India', x: 66, y: 52,
         avatar: punjabAvatar, avatarName: 'Alex', role: 'Research Student',
         story: 'As a research student, I\'m exploring sustainable farming methods in the breadbasket of India. I believe we can use technology to improve crop yields and reduce environmental impact.'
     },
     {
-        id: 'Iowa', name: 'Iowa, USA', x: 25, y: 35,
+        id: 'Iowa', name: 'Iowa, USA', x: 23, y: 45,
         avatar: iowaAvatar, avatarName: 'John', role: 'Family Farmer',
         story: 'My family has been farming this land for generations. I want to combine our traditional knowledge with modern techniques to make our farm more efficient and sustainable for the future.'
     },
     {
-        id: 'Sahel', name: 'Sahel, Africa', x: 49, y: 45,
+        id: 'Sahel', name: 'Sahel, Africa', x: 49, y: 55,
         avatar: sahelAvatar, avatarName: 'Leyla', role: 'Climate Scientist',
         story: 'I\'m a climate scientist studying the effects of changing weather patterns. The Sahel is a critical region for this research. Join me in developing strategies to help farmers adapt and thrive.'
     },
     {
-        id: 'Netherlands', name: 'Netherlands', x: 50, y: 30,
+        id: 'Netherlands', name: 'Netherlands', x: 47.5, y: 39,
         avatar: netherlandsAvatar, avatarName: 'Chloe', role: 'Agri-Tech Innovator',
         story: 'I believe technology is the key to the future of farming. Here in the Netherlands, we are pioneering new methods. Join me in pushing the boundaries of what\'s possible in agriculture.'
     },
     {
-        id: 'Brazil', name: 'Brazil', x: 40, y: 58,
-        avatar: brazilAvatar, avatarName: 'Sarah', role: 'Agricultural Student',
+        id: 'Brazil', name: 'Brazil', x: 32, y: 68,
+        avatar: brazilAvatar, avatarName: 'Sara', role: 'Agricultural Student',
         story: 'As an agricultural student, I\'m passionate about learning new techniques. Brazil\'s diverse climate provides a great opportunity to study different crops. Let\'s innovate together!'
     },
 ];
