@@ -34,15 +34,9 @@ const destinations = [
         story: 'My grandmother always said we must leave the earth better than we found it. Watching her tend her small garden with such care inspired me to think bigger. Now I combine her gentle wisdom with modern technology, trying to grow food in harmony with nature.'
     },
     {
-<<<<<<< Updated upstream
-        id: 'Brazil', name: 'Brazil', x: 32, y: 68,
-        avatar: brazilAvatar, avatarName: 'Sara', role: 'Agricultural Student',
-        story: 'As an agricultural student, I\'m passionate about learning new techniques. Brazil\'s diverse climate provides a great opportunity to study different crops. Let\'s innovate together!'
-=======
         id: 'Brazil', name: 'Brazil', x: 40, y: 58,
         avatar: brazilAvatar, avatarName: 'Sarah', role: 'Agricultural Student',
         story: 'I grew up helping my parents on our small farm, dreaming of faraway places. But when I left for university, I realized home was where I was needed most. I\'m learning everything I can to come back and show that we can farm sustainably and prosperously.'
->>>>>>> Stashed changes
     },
 ];
 
