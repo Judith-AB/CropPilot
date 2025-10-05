@@ -34,7 +34,7 @@ const destinations = [
         story: 'My grandmother always said we must leave the earth better than we found it. Watching her tend her small garden with such care inspired me to think bigger. Now I combine her gentle wisdom with modern technology, trying to grow food in harmony with nature.'
     },
     {
-        id: 'Brazil', name: 'Brazil', x: 31,y:68,
+        id: 'Brazil', name: 'Brazil', x: 40, y: 58,
         avatar: brazilAvatar, avatarName: 'Sarah', role: 'Agricultural Student',
         story: 'I grew up helping my parents on our small farm, dreaming of faraway places. But when I left for university, I realized home was where I was needed most. I\'m learning everything I can to come back and show that we can farm sustainably and prosperously.'
     },
@@ -44,15 +44,21 @@ export default function WorldMap({ onLocationSelect }: WorldMapProps) {
     const [selectedDestination, setSelectedDestination] = useState<typeof destinations[0] | null>(null);
 
     return (
-        <div className="relative h-screen bg-white text-black overflow-hidden">
-            <div className="flex flex-col items-center justify-center h-full p-4 lg:p-8">
-                <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-center text-black">
-                    Select a Farming Region
-                </h1>
-                <p className="mb-8 text-center max-w-lg text-black">
-                    Choose a region to start your farming journey. Each has unique climate data from NASA.
-                </p>
-                <div className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl bg-white">
+        <div style={{ background: 'linear-gradient(135deg, #122c73ff 0%, #8bc886ff 50%, #1e40af 100%)', minHeight: '100vh' }} className="relative overflow-hidden">
+            <div className="flex flex-col items-center justify-center min-h-screen p-4 lg:p-8">
+                <div className="mb-12 px-6">
+                    <h1 style={{ 
+                        fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+                        fontFamily: '"Montserrat", "Raleway", "Inter", sans-serif',
+                        letterSpacing: '0.02em'
+                    }} 
+                    className="font-bold text-white drop-shadow-xl text-center relative">
+                        <span className="relative z-10">Select a Farming Region</span>
+                        <div className="absolute inset-0 blur-2xl opacity-40 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400"></div>
+                    </h1>
+                </div>
+                
+                <div className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
                     <img
                         src={worldMapImage}
                         alt="World Map Background"
