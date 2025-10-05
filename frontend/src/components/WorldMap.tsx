@@ -34,7 +34,7 @@ const destinations = [
         story: 'My grandmother always said we must leave the earth better than we found it. Watching her tend her small garden with such care inspired me to think bigger. Now I combine her gentle wisdom with modern technology, trying to grow food in harmony with nature.'
     },
     {
-        id: 'Brazil', name: 'Brazil', x: 40, y: 58,
+        id: 'Brazil', name: 'Brazil', x: 31, y: 68,
         avatar: brazilAvatar, avatarName: 'Sarah', role: 'Agricultural Student',
         story: 'I grew up helping my parents on our small farm, dreaming of faraway places. But when I left for university, I realized home was where I was needed most. I\'m learning everything I can to come back and show that we can farm sustainably and prosperously.'
     },
