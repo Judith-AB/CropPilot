@@ -37,7 +37,7 @@ export function GameHeader({ week, totalWeeks, money, onAdvanceWeek, isProcessin
                 <Tractor className="h-7 w-7 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">TERRAFORM</h1>
+                <h1 className="text-2xl font-bold text-white tracking-tight">CropPilot</h1>
                 <p className="text-xs text-emerald-400 font-medium">🌍 The Legacy Project</p>
               </div>
             </div>

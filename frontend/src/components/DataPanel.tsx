@@ -1,8 +1,16 @@
-import { GameState } from '../App';
+import React from 'react';
 import { Leaf, Thermometer, Droplets, Calendar, Banknote, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { GameState } from '../App'; // Import the correct GameState from App.tsx
 
 // A simple component for a stat display
-const Stat = ({ icon, label, value, unit, colorClass, size = 'normal' }) => (
+const Stat = ({ icon, label, value, unit, colorClass, size = 'normal' }: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  unit?: string;
+  colorClass: string;
+  size?: 'normal' | 'large';
+}) => (
   <div className="flex items-center space-x-3">
     <div className={`p-2 bg-${colorClass}-500/20 rounded-xl border border-${colorClass}-400/30`}>
       {icon}
@@ -14,30 +22,38 @@ const Stat = ({ icon, label, value, unit, colorClass, size = 'normal' }) => (
   </div>
 );
 
-export const DataPanel = ({ gameState }: { gameState: GameState }) => {
+interface DataPanelProps {
+  gameState: GameState;
+}
+
+export const DataPanel: React.FC<DataPanelProps> = ({ gameState }) => {
+
+  // --- FIX: Read from the correct, simplified gameState properties ---
   const ndviValue = (gameState.ndvi * 100).toFixed(0);
-  const soilMoistureValue = (gameState.globalSoilMoisture * 100).toFixed(0);
+  const soilMoistureValue = (gameState.globalSoilMoisture * 100).toFixed(1);
   const temperatureValue = gameState.temperature.value.toFixed(1);
-  const sustainabilityScore = Math.round((gameState.plots.filter(p => p.cropType).reduce((sum, p) => sum + p.health, 0) / Math.max(1, gameState.plots.filter(p => p.cropType).length)));
+
+  const currentWeek = gameState.week;
+
+  const sustainabilityScore = Math.round((gameState.plots?.filter(p => p.cropType).reduce((sum, p) => sum + p.health, 0) ?? 0) / Math.max(1, gameState.plots?.filter(p => p.cropType).length ?? 1));
 
   return (
     <div className="bg-gradient-to-br from-slate-900/80 via-blue-950/80 to-slate-900/80 backdrop-blur-md rounded-3xl p-6 border-2 border-blue-400/40 shadow-2xl h-full flex flex-col space-y-4 game-glow">
-      {/* Header */}
+      
       <div>
         <h2 className="text-2xl font-bold text-white">FARM DASHBOARD</h2>
-        <p className="text-xs text-blue-300">Week {gameState.week} Report</p>
+        <p className="text-xs text-blue-300">Week {currentWeek} Report | Region: {gameState.region}</p>
       </div>
 
-      {/* Main Stats */}
       <div className="grid grid-cols-2 gap-4">
-        <Stat 
+        <Stat
           icon={<Calendar className="h-6 w-6 text-blue-400" />}
           label="Date"
           value={gameState.date}
           colorClass="blue"
           size="large"
         />
-        <Stat 
+        <Stat
           icon={<Banknote className="h-6 w-6 text-green-400" />}
           label="Budget"
           value={`$${gameState.money}`}
@@ -47,37 +63,35 @@ export const DataPanel = ({ gameState }: { gameState: GameState }) => {
       </div>
       <div className="w-full h-[1px] bg-blue-400/20"></div>
 
-      {/* NASA Data Section */}
       <div className="flex-1 flex flex-col justify-around space-y-3">
         <p className="text-xs text-blue-300 uppercase tracking-wide">NASA Satellite Feed</p>
-        <Stat 
+        <Stat
           icon={<Droplets className="h-5 w-5 text-cyan-400" />}
-          label="Global Soil Moisture"
-          value={soilMoistureValue}
+          label="Root Zone Moisture"
+          value={soilMoistureValue} 
           unit="%"
           colorClass="cyan"
         />
-        <Stat 
+        <Stat
           icon={<Leaf className="h-5 w-5 text-emerald-400" />}
           label="Avg. Crop Health (NDVI)"
-          value={ndviValue}
+          value={ndviValue} 
           unit="%"
           colorClass="emerald"
         />
-        <Stat 
+        <Stat
           icon={<Thermometer className="h-5 w-5 text-amber-400" />}
           label="Surface Temperature"
-          value={temperatureValue}
+          value={temperatureValue} 
           unit="°C"
           colorClass="amber"
         />
       </div>
       <div className="w-full h-[1px] bg-blue-400/20"></div>
-      
-      {/* Farm Status Section */}
-       <div className="flex-1 flex flex-col justify-around space-y-3">
-         <p className="text-xs text-blue-300 uppercase tracking-wide">Farm Status</p>
-        <Stat 
+
+      <div className="flex-1 flex flex-col justify-around space-y-3">
+        <p className="text-xs text-blue-300 uppercase tracking-wide">Farm Status</p>
+        <Stat
           icon={<ShieldCheck className="h-5 w-5 text-lime-400" />}
           label="Sustainability Score"
           value={sustainabilityScore}
@@ -86,13 +100,11 @@ export const DataPanel = ({ gameState }: { gameState: GameState }) => {
         />
       </div>
 
-      {/* Alert Box */}
-      <div className={`p-3 rounded-xl border-2 flex-shrink-0 ${
-          gameState.specialEvent ? 'bg-red-500/20 border-red-500/50' : 'bg-purple-500/10 border-purple-400/30'
-        }`}>
+      <div className={`p-3 rounded-xl border-2 flex-shrink-0 ${gameState.specialEvent ? 'bg-red-500/20 border-red-500/50' : 'bg-purple-500/10 border-purple-400/30'
+      }`}>
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0 mt-1">
-             {gameState.specialEvent ? <AlertTriangle className="h-5 w-5 text-red-400" /> : '💡'}
+            {gameState.specialEvent ? <AlertTriangle className="h-5 w-5 text-red-400" /> : '💡'}
           </div>
           <div className="min-w-0">
             <h4 className="font-bold text-white text-sm mb-1">{gameState.specialEvent?.eventName || "Smart Tip"}</h4>
