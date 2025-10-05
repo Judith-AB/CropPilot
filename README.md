@@ -27,12 +27,12 @@ This project demonstrates how NASA Earth observation data can be transformed int
    ```bash
    git clone <repository-url>
 
-2. Run the Python backend
+2. Run the Python backend.
    Make sure you have Python 3 installed.
    ```bash 
    cd backend
    python app.py
-   
+
 The backend API will be available a
 http://127.0.0.1:5000/api/gamestate
 
@@ -43,3 +43,20 @@ http://127.0.0.1:5000/api/gamestate
    npm run dev
 
 Open your browser at http://localhost:3000 to access the game.
+
+## Gameplay & Demo
+
+### Screenshots
+Here are some screenshots from CropPilot:
+
+![Game Cover](screenshots/gamecover.jpg)
+![World Map](screenshots/tochoosefarmlocation.jpg)
+![Avatar](screenshots/avatarToPlay.jpg)
+![Dashboard1](screenshots/dashboard1.jpg)
+![Dashboard2](screenshots/dashboard2.jpg)
+![Final Inference](screenshots/finalInference.jpg)
+
+### Demo Video
+Watch the gameplay demo here:  
+[![Demo Video]](https://drive.google.com/file/d/1bomUmVd1XIGzm2NBX9TN5yeevvG9pHRX/view?usp=sharing)
+
