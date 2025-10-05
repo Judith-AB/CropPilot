@@ -8,7 +8,19 @@ import { ActionFeedback, ActionResult } from './components/ActionFeedback';
 import { Tractor } from 'lucide-react';
 import { StartScreen } from './components/StartScreen';
 import WorldMap from './components/WorldMap';
+
+// Import all audio files
 import backgroundMusic from './assets/background-music.mp3';
+import startSound from './assets/start.wav';
+import plantSound from './assets/plantsound.wav';
+import correctSound from './assets/correct.wav';
+import wrongSound from './assets/wrong.wav';
+import completeSound from './assets/complete.wav';
+import drySound from './assets/dryl.wav';
+import avatarSound from './assets/avatar.wav';
+import mildIrriSound from './assets/mildirri.wav';
+import moderateIrriSound from './assets/moderateirri.wav';
+import heavyIrriSound from './assets/heavyirri.wav';
 
 // --- INTERFACE DEFINITIONS ---
 interface DataValue { value: number | null; unit: string | null; }
@@ -38,7 +50,6 @@ export interface GameState {
   totalHarvested: number;
   seasonProfit: number;
   date: string;
-  // --- FIX: Removed region from GameState to have a single source of truth ---
   globalSoilMoisture: number;
   ndvi: number;
   temperature: { value: number; unit: string; };
@@ -53,10 +64,29 @@ const INITIAL_MONEY = 5000;
 const API_URL = 'http://127.0.0.1:5000/api/gamestate';
 
 export default function App() {
-  // --- This is now the ONLY source of truth for the location ---
   const [currentScreen, setCurrentScreen] = useState('start');
   const [region, setRegion] = useState('Punjab');
   const audioRef = useRef<HTMLAudioElement>(null);
+  
+  // Audio refs for sound effects
+  const startSoundRef = useRef<HTMLAudioElement>(null);
+  const plantSoundRef = useRef<HTMLAudioElement>(null);
+  const correctSoundRef = useRef<HTMLAudioElement>(null);
+  const wrongSoundRef = useRef<HTMLAudioElement>(null);
+  const completeSoundRef = useRef<HTMLAudioElement>(null);
+  const drySoundRef = useRef<HTMLAudioElement>(null);
+  const avatarSoundRef = useRef<HTMLAudioElement>(null);
+  const mildIrriSoundRef = useRef<HTMLAudioElement>(null);
+  const moderateIrriSoundRef = useRef<HTMLAudioElement>(null);
+  const heavyIrriSoundRef = useRef<HTMLAudioElement>(null);
+
+  // Helper function to play sound effects
+  const playSound = (soundRef: React.RefObject<HTMLAudioElement>) => {
+    if (soundRef.current) {
+      soundRef.current.currentTime = 0;
+      soundRef.current.play().catch(e => console.error('Sound play failed:', e));
+    }
+  };
 
   const [gameState, setGameState] = useState<GameState>({
     week: 1,
@@ -85,16 +115,22 @@ export default function App() {
   const [actionResult, setActionResult] = useState<ActionResult | null>(null);
 
   const handleStartGame = () => {
-      if (audioRef.current && audioRef.current.paused) {
-        audioRef.current.play().catch(e => console.error(e));
-      }
+      playSound(startSoundRef);
       setCurrentScreen('map');
   };
 
   const handleLocationSelect = (locationId: string) => {
     const selectedRegion = locationId.charAt(0).toUpperCase() + locationId.slice(1);
     setRegion(selectedRegion);
+    playSound(avatarSoundRef); // Play avatar sound when selecting location
     setCurrentScreen('game');
+    
+    // Play background music after a short delay to ensure the audio element is mounted
+    setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.play().catch(e => console.error('Audio play failed:', e));
+      }
+    }, 100);
   };
 
   const fetchBackendData = async (turnNumber: number, selectedRegion: string) => {
@@ -141,6 +177,12 @@ export default function App() {
     if (isProcessing || gameState.gameComplete) return;
     setIsProcessing(true);
 
+    // Calculate average health before advancing
+    const healthyPlots = gameState.plots.filter(p => p.cropType !== null);
+    const avgHealthBefore = healthyPlots.length > 0 
+      ? healthyPlots.reduce((sum, p) => sum + p.health, 0) / healthyPlots.length 
+      : 0;
+
     const nextWeek = gameState.week + 1;
     const backendData = await fetchBackendData(nextWeek, region);
 
@@ -179,6 +221,21 @@ export default function App() {
         return newPlot;
       });
 
+      // Calculate average health after advancing
+      const healthyPlotsAfter = newPlots.filter(p => p.cropType !== null);
+      const avgHealthAfter = healthyPlotsAfter.length > 0 
+        ? healthyPlotsAfter.reduce((sum, p) => sum + p.health, 0) / healthyPlotsAfter.length 
+        : 0;
+
+      // Play sound based on health change
+      if (healthyPlotsAfter.length > 0) {
+        if (avgHealthAfter < avgHealthBefore) {
+          playSound(wrongSoundRef); // Health decreased
+        } else {
+          playSound(correctSoundRef); // Health increased or stayed same
+        }
+      }
+
       return {
         ...prev,
         week: backendData.turnNumber,
@@ -197,19 +254,34 @@ export default function App() {
 
   const performAction = (action: string, level: string, cost: number) => {
     if (gameState.money < cost || gameState.selectedPlot === null || isProcessing) return;
+    
+    // Play start.wav for all button clicks
+    playSound(startSoundRef);
+    
     setGameState(prev => {
       const plotIndex = prev.selectedPlot!;
       const newPlots = [...prev.plots];
       const plot = { ...newPlots[plotIndex] };
+      
       switch (action) {
         case 'plant':
           plot.cropType = 'corn'; plot.growthStage = 1; plot.health = 100;
+          playSound(plantSoundRef); // Plant sound for planting crops
           break;
         case 'water':
           let moistureGain = 0;
-          if (level === 'light') moistureGain = 0.15;
-          if (level === 'moderate') moistureGain = 0.30;
-          if (level === 'heavy') moistureGain = 0.50;
+          if (level === 'light') {
+            moistureGain = 0.15;
+            playSound(mildIrriSoundRef);
+          }
+          if (level === 'moderate') {
+            moistureGain = 0.30;
+            playSound(moderateIrriSoundRef);
+          }
+          if (level === 'heavy') {
+            moistureGain = 0.50;
+            playSound(heavyIrriSoundRef);
+          }
           plot.soilMoisture = Math.min(1, plot.soilMoisture + moistureGain);
           break;
         case 'fertilize':
@@ -217,23 +289,28 @@ export default function App() {
           if (level === 'cheap') { healthGain = 10; plot.fertilizerEffect = 2; }
           if (level === 'premium') { healthGain = 25; plot.fertilizerEffect = 4; }
           plot.health = Math.min(100, plot.health + healthGain);
+          playSound(drySoundRef); // dryl.wav for fertilizers
           break;
         case 'pestControl':
           let pestReduction = 0;
           if (level === 'basic') pestReduction = 40;
           if (level === 'advanced') pestReduction = 80;
           plot.pestLevel = Math.max(0, plot.pestLevel - pestReduction);
+          playSound(drySoundRef); // dryl.wav for pesticides
           break;
         case 'harvest':
           if (plot.growthStage === 5) {
             const harvestValue = Math.floor((plot.health / 100) * 800);
             plot.cropType = null; plot.growthStage = 0; plot.health = 100;
+            playSound(completeSoundRef);
             return {
               ...prev,
               money: prev.money + harvestValue,
               totalHarvested: prev.totalHarvested + 1,
               plots: [...newPlots.slice(0, plotIndex), plot, ...newPlots.slice(plotIndex + 1)],
             };
+          } else {
+            playSound(wrongSoundRef);
           }
           return prev;
       }
@@ -270,7 +347,21 @@ export default function App() {
 
   return (
     <>
+      {/* Background Music */}
       <audio ref={audioRef} src={backgroundMusic} loop />
+      
+      {/* Sound Effects */}
+      <audio ref={startSoundRef} src={startSound} />
+      <audio ref={plantSoundRef} src={plantSound} />
+      <audio ref={correctSoundRef} src={correctSound} />
+      <audio ref={wrongSoundRef} src={wrongSound} />
+      <audio ref={completeSoundRef} src={completeSound} />
+      <audio ref={drySoundRef} src={drySound} />
+      <audio ref={avatarSoundRef} src={avatarSound} />
+      <audio ref={mildIrriSoundRef} src={mildIrriSound} />
+      <audio ref={moderateIrriSoundRef} src={moderateIrriSound} />
+      <audio ref={heavyIrriSoundRef} src={heavyIrriSound} />
+      
       <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 flex flex-col relative overflow-hidden">
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-3xl"></div>
@@ -336,4 +427,3 @@ export default function App() {
     </>
   );
 }
-
