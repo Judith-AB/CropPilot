@@ -44,15 +44,15 @@ export default function WorldMap({ onLocationSelect }: WorldMapProps) {
     const [selectedDestination, setSelectedDestination] = useState<typeof destinations[0] | null>(null);
 
     return (
-        <div className="relative h-screen bg-gradient-to-br from-indigo-950 to-slate-950 text-white overflow-hidden">
+        <div className="relative h-screen bg-white text-black overflow-hidden">
             <div className="flex flex-col items-center justify-center h-full p-4 lg:p-8">
-                <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-center">
+                <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-center text-black">
                     Select a Farming Region
                 </h1>
-                <p className="mb-8 text-center max-w-lg text-violet-300">
+                <p className="mb-8 text-center max-w-lg text-black">
                     Choose a region to start your farming journey. Each has unique climate data from NASA.
                 </p>
-                <div className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
+                <div className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl bg-white">
                     <img
                         src={worldMapImage}
                         alt="World Map Background"
@@ -76,37 +76,36 @@ export default function WorldMap({ onLocationSelect }: WorldMapProps) {
 
             {selectedDestination && (
                 <div className="absolute inset-0 z-20 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
-                    <div className="bg-slate-800/80 border-2 border-violet-500/30 rounded-2xl p-8 max-w-xl w-full relative shadow-2xl text-white">
+                    <div className="bg-white border-2 border-violet-500/30 rounded-2xl p-8 max-w-xl w-full relative shadow-2xl text-black">
                         <button
                             onClick={() => setSelectedDestination(null)}
-                            className="absolute top-4 right-4 text-violet-300 hover:text-white transition-colors"
+                            className="absolute top-4 right-4 text-black hover:text-red-600 transition-colors"
                         >
                             <X size={24} />
                         </button>
 
-                        <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-6">
+                        <div className="flex items-center space-x-6">
                             <img
                                 src={selectedDestination.avatar}
                                 alt={`${selectedDestination.avatarName} avatar`}
                                 className="w-40 h-40 object-cover rounded-full border-4 border-violet-400 shadow-lg flex-shrink-0"
                             />
-                            <div className="text-center sm:text-left">
-                                <h2 className="text-4xl font-bold">{selectedDestination.avatarName}</h2>
-                                <p className="text-lg font-semibold text-violet-300">{selectedDestination.role}</p>
-                                <p className="text-md font-bold text-slate-300 mt-1">{selectedDestination.name}</p>
-                                <p className="text-slate-200 text-md mt-4">
-                                    {selectedDestination.story}
-                                </p>
+                            <div className="relative bg-white text-black p-6 rounded-3xl shadow-lg w-full">
+                                <div className="absolute top-1/2 -left-3 w-6 h-6 bg-white transform -translate-y-1/2 rotate-45"></div>
+
+                                <div className="space-y-2">
+                                    <h2 className="text-3xl font-bold">{selectedDestination.avatarName}</h2>
+                                    <p className="text-lg font-semibold text-black">{selectedDestination.role}</p>
+                                    <p className="text-md text-black">{selectedDestination.story}</p>
+                                </div>
+                                <button
+                                    onClick={() => onLocationSelect(selectedDestination.id)}
+                                    className="w-full mt-4 px-6 py-3 rounded-lg text-lg font-bold text-white bg-violet-600 hover:bg-violet-700 transition-colors transform hover:scale-105"
+                                >
+                                    Start as {selectedDestination.avatarName}
+                                </button>
                             </div>
                         </div>
-
-                        <button
-
-                            onClick={() => onLocationSelect(selectedDestination.id)}
-                            className="w-full mt-8 px-6 py-4 rounded-lg text-xl font-bold text-white bg-violet-600 hover:bg-violet-700 transition-colors transform hover:scale-105"
-                        >
-                            Start as {selectedDestination.avatarName}
-                        </button>
                     </div>
                 </div>
             )}
